@@ -1,0 +1,48 @@
+<html>
+    <head>
+        <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
+        <link rel=stylesheet type=text/css href="{{ url_for('static', filename='simplegrid.css') }}">
+    </head>
+
+    <body>
+
+    {% include 'loginlink.html' %}
+    
+        <div class = 'pane'>
+
+            <div class = 'flash'>
+              {% with messages = get_flashed_messages() %}
+              {% if messages %}
+              
+              <ul>
+                {% for message in messages %}
+                <li> <strong> {{ message }} </strong> </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% endwith %}
+            </div>
+
+            <div class="grid grid-pad">
+                <div class="col-1-4">
+                    <div class="content">
+                        {% for c in categories %}
+
+                        <div class = 'name'>
+                            <a href = '{{url_for('categoryList', category_id = c.id) }}'>{{c.name}}</a>
+                        </div>
+
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="col-3-4">
+                    <div class="content">
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

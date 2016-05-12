@@ -1,0 +1,22 @@
+body            { font-family: sans-serif; background-color: #CCCCBB}
+h1, h2, h3, h4       { color: #0000FF; }
+h1, h2          { font-family: 'Georgia', serif; margin: 0; }
+h1              { border-bottom: 2px solid #eee; }
+h2              { font-size: 1.2em; }
+
+p, dd, dt               { color: #FFFFFF;}
+
+a {text-decoration: underline; color:#CCCCCC; font-size: .75em;}
+
+a.logout {color:#000000;}
+
+.pane {position:absolute; border: 2px solid;
+    padding: 15px; margin: 15px; border-color: #999999; background-color: #000066 }
+.header         {left:50%; text-align: center;}
+.selected {font-weight: bold; color: #CCCCCC; font-size: 1.50em;}
+.name {}
+.description {}
+.editdeletepane{}
+
+.flash          { background: #cee5F5; }
+
