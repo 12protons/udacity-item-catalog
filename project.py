@@ -28,20 +28,28 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 
-# Login screen, shown when a user clicks 'Login',
-# or attempts to access a secure part of the site
 @app.route('/login')
 def showLogin():
+    """ Displays login screen, shown when a user clicks 'Login'
+        or attempts to access a secure part of the site.
+
+        Returns:
+            Html of the login screen.
+    """
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
                     for x in xrange(32))
     login_session['state'] = state
     return render_template('login.html', STATE=state)
 
 
-# Callback for google login button.
-# Logs the user into the site using the google auth apis.
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
+    """ Callback for google login button.
+        Logs the user into the site using the google auth apis.
+
+        Returns:
+            Html of google login success page, or failure information.
+    """
     # Validate state token
     if request.args.get('state') != login_session['state']:
         response = make_response(json.dumps('Invalid state parameter.'), 401)
@@ -124,10 +132,14 @@ def gconnect():
     return output
 
 
-# Logs the user out of the site, uses google auth apis.
-# Removes all locally stored session info.
 @app.route('/gdisconnect')
 def gdisconnect():
+    """ Logs the user out of the site, uses google auth apis.
+        Removes all locally stored session info.
+
+        Returns:
+            Html of categories index page, or logout error info.
+    """
     access_token = login_session['access_token']
     print 'In gdisconnect access token is %s', access_token
     print 'User name is: '
@@ -159,34 +171,60 @@ def gdisconnect():
         return response
 
 
-# RESTful api - used to query all items in a specific category
 @app.route('/categories/<int:category_id>/items/JSON')
 def categoryListJSON(category_id):
+    """ RESTful api - used to query all items in a specific category
+
+        Args:
+            category_id: ID of the category to display.
+
+        Returns:
+            JSON representation of the requested category.
+    """
     category = session.query(Category).filter_by(id=category_id).one()
     items = session.query(Item).filter_by(category_id=category_id).all()
     return jsonify(Items=[i.serialize for i in items])
 
 
-# RESTful api - used to query a specific item
 @app.route('/categories/<int:category_id>/items/<int:item_id>/JSON')
 def categoryItemJSON(category_id, item_id):
+    """ RESTful api - used to query a specific item in a specific category
+
+        Args:
+            category_id: ID of the item's category.
+            item_id: ID of the specific item to display.
+
+        Returns:
+            JSON representation of the requested item.
+    """
     item = session.query(Item).filter_by(id=item_id).one()
     return jsonify(Items=item.serialize)
 
 
-# Shows all available categories.
-# Home page routes to /categories
 @app.route('/')
 @app.route('/categories')
 def categories():
+    """ Shows all available categories.
+        Home page routes to /categories
+
+        Returns:
+            Html of categories index page.
+    """
     categories = session.query(Category).all()
     return render_template('categories.html', categories=categories,
                            logged_in=('username' in login_session))
 
 
-# Shows all items for the selected category.
 @app.route('/categories/<int:category_id>/')
 def categoryList(category_id):
+    """ Shows all items for the selected category.
+
+        Args:
+            category_id: ID of the category to display.
+
+        Returns:
+            Html of categories index page with the given category displayed.
+    """
     categories = session.query(Category).all()
     category = session.query(Category).filter_by(id=category_id).one()
     items = session.query(Item).filter_by(category_id=category_id)
@@ -195,9 +233,16 @@ def categoryList(category_id):
                            logged_in=('username' in login_session))
 
 
-# Creates a new item in the chosen category.
 @app.route('/categories/<int:category_id>/new', methods=['GET', 'POST'])
 def newItem(category_id):
+    """ Shows all items for the selected category.
+
+        Args:
+            category_id: ID of the category to display.
+
+        Returns:
+            Html of new item form to add an item to the given category.
+    """
     if 'username' not in login_session:
         return redirect('/login')
     # If this is a post request, create a new item
@@ -215,10 +260,18 @@ def newItem(category_id):
                                logged_in=('username' in login_session))
 
 
-# Edits the selected item in the chosen category.
 @app.route('/categories/<int:category_id>/<int:item_id>/edit',
            methods=['GET', 'POST'])
 def editItem(category_id, item_id):
+    """ Edits the selected item in the chosen category.
+
+        Args:
+            category_id: ID of the item's category.
+            item_id: ID of the item to edit.
+
+        Returns:
+            Html of the edit item form to edit a specific item.
+    """
     if 'username' not in login_session:
         return redirect('/login')
     editedItem = session.query(Item).filter_by(id=item_id).one()
@@ -239,10 +292,18 @@ def editItem(category_id, item_id):
                                logged_in=('username' in login_session))
 
 
-# Deletes the selected item in the chosen category.
 @app.route('/category/<int:category_id>/<int:item_id>/delete/',
            methods=['GET', 'POST'])
 def deleteItem(category_id, item_id):
+    """ Deletes the selected item in the chosen category.
+
+        Args:
+            category_id: ID of the item's category.
+            item_id: ID of the item to delete.
+
+        Returns:
+            Html of the delete item confirmaion page.
+    """
     if 'username' not in login_session:
         return redirect('/login')
     deletedItem = session.query(Item).filter_by(id=item_id).one()
