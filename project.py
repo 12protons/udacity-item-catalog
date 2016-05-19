@@ -205,6 +205,7 @@ def editItem(category_id, item_id):
     if request.method == 'POST':
         if request.form['name']:
             editedItem.name = request.form['name']
+            editedItem.description = request.form['description']
         session.add(editedItem)
         session.commit()
         flash("item edited!")
